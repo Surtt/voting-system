@@ -1,0 +1,17 @@
+:root {
+  --font: "Roboto", sans-serif;
+  --bg: #ffffff;
+  --text-strong: #191919;
+  --text-primary: #292929;
+  --button-bg: var(--text-strong);
+  --button-text: var(--bg);
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+}
+
+p {
+  margin: 0;
+}
