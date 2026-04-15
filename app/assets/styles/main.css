@@ -3,8 +3,15 @@
   --bg: #ffffff;
   --text-strong: #191919;
   --text-primary: #292929;
+  --border: #e6e6e6;
   --button-bg: var(--text-strong);
   --button-text: var(--bg);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 body {
