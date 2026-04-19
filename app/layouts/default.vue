@@ -3,7 +3,9 @@
 <template>
   <div class="layout">
     <aside class="sidebar"><LayoutSidebar /></aside>
-    <main class="main"><LayoutMain /></main>
+    <main class="main">
+      <LayoutMain><slot /></LayoutMain>
+    </main>
   </div>
 </template>
 
