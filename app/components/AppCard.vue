@@ -1,52 +1,81 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { NuxtLink } from "#components";
+import type { Post } from "~/interfaces/post.interface";
+
+const { post, asLink = false } = defineProps<{ post: Post; asLink?: boolean }>();
+
+const daysAgo = computed(() => {
+  const rtf = new Intl.RelativeTimeFormat("ru", { numeric: "auto" });
+  const diffInDays = Math.round(
+    (new Date(post.published_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
+  );
+  return rtf.format(diffInDays, "day");
+});
+</script>
 
 <template>
-  <div class="card">
-    <header class="card-header">
-      <div class="card-company-container">
-        <img src="~/assets/icons/purpleschool.svg" width="24" height="24" /><span
-          class="card-company"
-          >PurpleSchool</span
-        >
+  <component :is="asLink ? NuxtLink : 'div'" :to="asLink ? `/${post.id}` : undefined" class="card-link">
+    <div class="card">
+      <div class="card-container">
+        <header class="card-header">
+          <div class="card-company-container">
+            <img src="~/assets/icons/purpleschool.svg" width="24" height="24" alt="logo" /><span
+              class="card-company"
+              >PurpleSchool</span
+            >
+          </div>
+          <span class="card-date">{{ daysAgo }}</span>
+        </header>
+        <div class="card-content">
+          <h3 class="card-heading">{{ post.title }}</h3>
+          <p class="card-text">
+            {{ post.content }}
+          </p>
+        </div>
+        <footer class="card-footer">
+          <div class="card-likes">
+            <div class="card-like">
+              <span class="card-like-count">{{ post.likes }}</span>
+              <Icon name="solar:like-linear" size="18" />
+            </div>
+            <div class="card-dislike">
+              <span class="card-dislike-count">{{ post.dislikes }}</span>
+              <Icon name="solar:dislike-linear" size="18" />
+            </div>
+          </div>
+          <div class="card-actions">
+            <div class="card-remove"><Icon name="solar:trash-bin-trash-linear" size="18" /></div>
+            <div class="card-edit">
+              <Icon name="solar:pen-linear" size="15" />
+              <span class="card-edit-text">Изменить</span>
+            </div>
+          </div>
+        </footer>
       </div>
-      <span class="card-date">4 дня назад</span>
-    </header>
-    <div class="card-content">
-      <h3 class="card-heading">Добавить функцию голосования</h3>
-      <p class="card-text">
-        Попробовать добавить в приложение функцию голосования, которая позволит определить, какая
-        фича более полезна, а какая нет. После добавления поста появляется...
-      </p>
+      <hr v-if="asLink" class="line" />
     </div>
-    <footer class="card-footer">
-      <div class="card-likes">
-        <div class="card-like">
-          <span class="card-like-count">10</span>
-          <Icon name="solar:like-linear" size="18" />
-        </div>
-        <div class="card-dislike">
-          <span class="card-dislike-count">1</span>
-          <Icon name="solar:dislike-linear" size="18" />
-        </div>
-      </div>
-      <div class="card-actions">
-        <div class="card-remove"><Icon name="solar:trash-bin-trash-linear" size="18" /></div>
-        <div class="card-edit">
-          <Icon name="solar:pen-linear" size="15" />
-          <span class="card-edit-text">Изменить</span>
-        </div>
-      </div>
-    </footer>
-  </div>
+  </component>
 </template>
 
 <style scoped>
+.card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
 .card {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 36px;
+  margin-top: 36px;
   max-width: 533px;
 }
+.card-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
 .card-header {
   display: flex;
   align-items: center;
@@ -123,5 +152,9 @@
 .card-like-count,
 .card-dislike-count {
   color: var(--text-primary);
+}
+
+.line {
+  border: 1px solid var(--border);
 }
 </style>
