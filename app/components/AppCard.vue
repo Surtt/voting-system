@@ -4,6 +4,30 @@ import type { Post } from "~/interfaces/post.interface";
 
 const { post, asLink = false } = defineProps<{ post: Post; asLink?: boolean }>();
 
+const reactionsStore = useReactionsStore();
+const reaction = computed(() => reactionsStore.getReaction(post.id));
+
+const localLikes = ref(post.likes);
+const localDislikes = ref(post.dislikes);
+
+async function handleLike(e: Event) {
+  e.preventDefault();
+  const data = await reactionsStore.like(post.id);
+  if (data) {
+    localLikes.value = data.likes;
+    localDislikes.value = data.dislikes;
+  }
+}
+
+async function handleDislike(e: Event) {
+  e.preventDefault();
+  const data = await reactionsStore.dislike(post.id);
+  if (data) {
+    localLikes.value = data.likes;
+    localDislikes.value = data.dislikes;
+  }
+}
+
 const daysAgo = computed(() => {
   const rtf = new Intl.RelativeTimeFormat("ru", { numeric: "auto" });
   const diffInDays = Math.round(
@@ -14,7 +38,11 @@ const daysAgo = computed(() => {
 </script>
 
 <template>
-  <component :is="asLink ? NuxtLink : 'div'" :to="asLink ? `/${post.id}` : undefined" class="card-link">
+  <component
+    :is="asLink ? NuxtLink : 'div'"
+    :to="asLink ? `/${post.id}` : undefined"
+    class="card-link"
+  >
     <div class="card">
       <div class="card-container">
         <header class="card-header">
@@ -34,14 +62,22 @@ const daysAgo = computed(() => {
         </div>
         <footer class="card-footer">
           <div class="card-likes">
-            <div class="card-like">
-              <span class="card-like-count">{{ post.likes }}</span>
+            <button
+              class="card-like"
+              :class="{ 'card-like--active': reaction === 'liked' }"
+              @click="handleLike"
+            >
+              <span class="card-like-count">{{ localLikes }}</span>
               <Icon name="solar:like-linear" size="18" />
-            </div>
-            <div class="card-dislike">
-              <span class="card-dislike-count">{{ post.dislikes }}</span>
+            </button>
+            <button
+              class="card-dislike"
+              :class="{ 'card-dislike--active': reaction === 'disliked' }"
+              @click="handleDislike"
+            >
+              <span class="card-dislike-count">{{ localDislikes }}</span>
               <Icon name="solar:dislike-linear" size="18" />
-            </div>
+            </button>
           </div>
           <div class="card-actions">
             <div class="card-remove"><Icon name="solar:trash-bin-trash-linear" size="18" /></div>
@@ -140,6 +176,22 @@ const daysAgo = computed(() => {
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+.card-like,
+.card-dislike {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.card-like--active {
+  color: #22c55e;
+}
+
+.card-dislike--active {
+  color: #ef4444;
 }
 
 .card-like-count,
