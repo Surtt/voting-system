@@ -1,4 +1,9 @@
 <script setup lang="ts">
+useHead({
+  title: "Вход",
+  meta: [{ name: "description", content: "Войдите в аккаунт, чтобы создавать и редактировать посты на VoteApp" }],
+});
+
 const authStore = useAuthStore();
 const router = useRouter();
 

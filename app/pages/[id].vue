@@ -7,7 +7,11 @@ const API_URL = config.public.apiurl;
 const route = useRoute();
 const id = computed(() => route.params.id);
 const { data, error } = useFetch<Post>(`${API_URL}/posts/${id.value}`);
-console.log(id.value, data.value);
+
+useHead(computed(() => ({
+  title: data.value?.title ?? "Пост",
+  meta: [{ name: "description", content: data.value?.content?.slice(0, 160) ?? "" }],
+})));
 </script>
 
 <template>
