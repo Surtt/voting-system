@@ -20,6 +20,11 @@ const { data, error } = useFetch<GetPostsResponse>(`${API_URL}/posts`, {
   query,
 });
 
+useHead({
+  title: "Главная",
+  meta: [{ name: "description", content: "Голосуйте за лучшие посты и делитесь мнением на платформе VoteApp" }],
+});
+
 function setSort(value: string) {
   router.push({ query: { ...route.query, sort: value, page: 1 } });
 }
