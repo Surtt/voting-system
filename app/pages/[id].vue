@@ -12,10 +12,14 @@ useHead(computed(() => ({
   title: data.value?.title ?? "Пост",
   meta: [{ name: "description", content: data.value?.content?.slice(0, 160) ?? "" }],
 })));
+
+function handleDeleted() {
+  navigateTo("/");
+}
 </script>
 
 <template>
-  <AppCard v-if="data" :key="data.id" :post="data" />
+  <AppCard v-if="data" :key="data.id" :post="data" @deleted="handleDeleted" />
   <div v-else-if="error">Error: {{ error.message }}</div>
 </template>
 

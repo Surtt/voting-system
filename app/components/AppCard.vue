@@ -3,9 +3,12 @@ import { NuxtLink } from "#components";
 import type { Post } from "~/interfaces/post.interface";
 
 const { post, asLink = false } = defineProps<{ post: Post; asLink?: boolean }>();
+const emit = defineEmits<{ deleted: [id: number] }>();
 
 const reactionsStore = useReactionsStore();
+const authStore = useAuthStore();
 const reaction = computed(() => reactionsStore.getReaction(post.id));
+const isOwner = computed(() => authStore.user?.id === post.author_id);
 
 const localLikes = ref(post.likes);
 const localDislikes = ref(post.dislikes);
@@ -26,6 +29,15 @@ async function handleDislike(e: Event) {
     localLikes.value = data.likes;
     localDislikes.value = data.dislikes;
   }
+}
+
+async function handleDelete(e: Event) {
+  e.preventDefault();
+  await $fetch(`/api/posts/${post.id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${authStore.token}` },
+  });
+  emit("deleted", post.id);
 }
 
 const daysAgo = computed(() => {
@@ -79,12 +91,14 @@ const daysAgo = computed(() => {
               <Icon name="solar:dislike-linear" size="18" />
             </button>
           </div>
-          <div class="card-actions">
-            <div class="card-remove"><Icon name="solar:trash-bin-trash-linear" size="18" /></div>
-            <div class="card-edit">
+          <div v-if="isOwner" class="card-actions">
+            <button class="card-remove" @click="handleDelete">
+              <Icon name="solar:trash-bin-trash-linear" size="18" />
+            </button>
+            <NuxtLink :to="`/edit/${post.id}`" class="card-edit" @click.stop>
               <Icon name="solar:pen-linear" size="15" />
               <span class="card-edit-text">Изменить</span>
-            </div>
+            </NuxtLink>
           </div>
         </footer>
       </div>
@@ -179,11 +193,17 @@ const daysAgo = computed(() => {
 }
 
 .card-like,
-.card-dislike {
+.card-dislike,
+.card-remove {
   background: none;
   border: none;
   cursor: pointer;
   padding: 0;
+}
+
+.card-edit {
+  text-decoration: none;
+  color: inherit;
 }
 
 .card-like--active {
