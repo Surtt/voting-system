@@ -36,7 +36,15 @@ function setPage(value: number) {
 
 <template>
   <AppFilter v-model="sort" @update:model-value="setSort" />
-  <div v-if="data"><AppCard v-for="post in data.posts" :key="post.id" :post="post" as-link /></div>
+  <div v-if="data">
+    <AppCard
+      v-for="post in data.posts"
+      :key="post.id"
+      :post="post"
+      as-link
+      @deleted="(id) => data!.posts = data!.posts.filter(p => p.id !== id)"
+    />
+  </div>
   <div v-else-if="error">Error: {{ error.message }}</div>
   <AppPagination
     v-if="data && data.total_pages > 1"
